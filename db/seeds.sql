@@ -15,7 +15,7 @@ VALUES  ("Captain", 100000, 1),
 
 INSERT INTO employees (first_name, last_name, role_id)
 VALUES  ("Kathryn", "Janeway", 1),
-        ("Samantha", "Wildman", 5);
+        ("Samantha", "Wildman", 6);
 
 INSERT INTO employees (first_name, last_name, role_id, manager_id)
 VALUES  ("Tom", "Paris", 2, 1),

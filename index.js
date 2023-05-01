@@ -1,5 +1,5 @@
-const mysql2 = require("mysql2");
-const inquirer = require ("inquirer");
+const mysql = require("mysql2");
+const inquirer = require("inquirer");
 const express = require("express");
 const PORT = process.env.PORT || 3001;
 const app = express();
@@ -18,7 +18,7 @@ const db = mysql.createConnection(
   );
 
 const defaultMenu = ()=>{
-    inqurior.prompt([
+    inquirer.prompt([
         {
             type:"list",
             message:"What would you like to do?",
@@ -28,28 +28,34 @@ const defaultMenu = ()=>{
     ]).then(ans=>{
         console.log(ans);
         if(ans.answer === "View All Departments"){
-            
-            defaultMenu()
+            db.query('SELECT name AS "Department", id FROM departments', function (err, results) {
+                console.log(results);
+              });
+            defaultMenu();
         }
         if(ans.answer === "View All Roles"){
-            
-            defaultMenu()
+            db.query('SELECT roles.id, title AS "Role", departments.name AS "Department", salary AS "Salary" FROM roles JOIN departments ON department_id = departments.id', function (err, results) {
+                console.log(results);
+              });
+            defaultMenu();
         }
         if(ans.answer === "View all Employees"){
-            
-            defaultMenu()
+            db.query('SELECT employees.id, first_name AS "First Name", last_name AS "Last Name", roles.title AS "Job Title", departments.name AS "Department", roles.salary AS "Salary", manager_id AS "Manager" FROM employees JOIN roles ON role_id = roles.id JOIN departments ON roles.department_id = departments.id', function (err, results) {
+                console.log(results);
+              });
+            defaultMenu();
         }
         if(ans.answer === "Add a Department"){
-            
+            addDepartment();
         }
         if(ans.answer === "Add a Role"){
-            
+            addRole();
         }
         if(ans.answer === "Add an Employee"){
-            
+            addEmployee();
         }
         if(ans.answer === "Update an Employee's Role"){
-            
+            updateEmployee();
         }
     })
 }
@@ -62,7 +68,9 @@ const addDepartment = ()=>{
             name:"name"
         }
     ]).then(ans=>{
-    
+        db.query(`INSERT INTO departments (name) VALUES ("${ans.name}")`, function (err, results) {
+            console.log(results);
+          });
         defaultMenu()
     })
 }
@@ -81,12 +89,19 @@ const addRole = ()=>{
         },
         {
             type:"input",
-            message:"What is the department this role belongs to?",
+            message:"What is the department ID this role belongs to?",
             name:"department",
-            choices:[]
         }
+        // {
+        //     type:"list",
+        //     message:"What is the department this role belongs to?",
+        //     name:"department",
+        //     choices:[]
+        // }
     ]).then(ans=>{
-    
+        db.query(`INSERT INTO roles (title, salary, department_id) VALUES ("${ans.title}", ${ans.salary}, ${ans.department})`, function (err, results) {
+            console.log(results);
+          });
         defaultMenu()
     })
 }
@@ -104,19 +119,31 @@ const addEmployee = ()=>{
             name:"lName"
         },
         {
-            type:"list",
-            message:"What is this employee's role?",
+            type:"input",
+            message:"What is this employee's role ID?",
             name:"role",
-            choices:[]
         },
+        // {
+        //     type:"list",
+        //     message:"What is this employee's role?",
+        //     name:"role",
+        //     choices:[]
+        // },
         {
-            type:"list",
-            message:"Who is this employee's manager?",
-            name:"role",
-            choices:["None"]
+            type:"input",
+            message:"What is this employee's manager's ID?",
+            name:"manager",
         }
+        // {
+        //     type:"list",
+        //     message:"Who is this employee's manager?",
+        //     name:"manager",
+        //     choices:["None"]
+        // }
     ]).then(ans=>{
-    
+        db.query(`INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES ("${ans.fName}", "${ans.lName}", ${ans.role}, ${ans.manager})`, function (err, results) {
+            console.log(results);
+          });
         defaultMenu()
     })
 }
@@ -138,3 +165,5 @@ const updateEmployee = ()=>{
 app.listen(PORT, () =>
     console.log(`App listening on http://localhost:${PORT}`)
 );
+
+defaultMenu();
