@@ -34,20 +34,20 @@ const defaultMenu = ()=>{
         if(ans.answer === "View All Departments"){
             db.query('SELECT name AS "Department", id FROM departments', function (err, results) {
                 console.log(results);
+                defaultMenu();
               });
-            defaultMenu();
         }
         if(ans.answer === "View All Roles"){
             db.query('SELECT roles.id, title AS "Role", departments.name AS "Department", salary AS "Salary" FROM roles JOIN departments ON department_id = departments.id', function (err, results) {
                 console.log(results);
+                defaultMenu();
               });
-            defaultMenu();
         }
         if(ans.answer === "View all Employees"){
             db.query('SELECT employees.id, first_name AS "First Name", last_name AS "Last Name", roles.title AS "Job Title", departments.name AS "Department", roles.salary AS "Salary", manager_id AS "Manager" FROM employees JOIN roles ON role_id = roles.id JOIN departments ON roles.department_id = departments.id', function (err, results) {
                 console.log(results);
+                defaultMenu();
               });
-            defaultMenu();
         }
         if(ans.answer === "Add a Department"){
             addDepartment();
@@ -74,8 +74,8 @@ const addDepartment = ()=>{
     ]).then(ans=>{
         db.query(`INSERT INTO departments (name) VALUES ("${ans.name}")`, function (err, results) {
             console.log(results);
+            defaultMenu();
           });
-        defaultMenu()
     })
 }
 
@@ -105,8 +105,8 @@ const addRole = ()=>{
     ]).then(ans=>{
         db.query(`INSERT INTO roles (title, salary, department_id) VALUES ("${ans.title}", ${ans.salary}, ${ans.department})`, function (err, results) {
             console.log(results);
+            defaultMenu();
           });
-        defaultMenu()
     })
 }
 
@@ -147,8 +147,8 @@ const addEmployee = ()=>{
     ]).then(ans=>{
         db.query(`INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES ("${ans.fName}", "${ans.lName}", ${ans.role}, ${ans.manager})`, function (err, results) {
             console.log(results);
+            defaultMenu();
           });
-        defaultMenu()
     })
 }
 
@@ -179,8 +179,8 @@ const updateEmployee = ()=>{
     ]).then(ans=>{
         db.query(`UPDATE employees SET role_id = "${ans.role}" WHERE id = "${ans.employee}"`, function (err, results) {
             console.log(results);
+            defaultMenu();
           });
-        defaultMenu()
     })
 }
 
