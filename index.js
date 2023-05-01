@@ -7,6 +7,10 @@ const app = express();
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
+// const rolesArr = [];
+// const departmentsArr = [];
+// const managersArr = ["None"];
+
 const db = mysql.createConnection(
     {
       host: 'localhost',
@@ -90,13 +94,13 @@ const addRole = ()=>{
         {
             type:"input",
             message:"What is the department ID this role belongs to?",
-            name:"department",
+            name:"department"
         }
         // {
         //     type:"list",
         //     message:"What is the department this role belongs to?",
         //     name:"department",
-        //     choices:[]
+        //     choices:departmentsArr
         // }
     ]).then(ans=>{
         db.query(`INSERT INTO roles (title, salary, department_id) VALUES ("${ans.title}", ${ans.salary}, ${ans.department})`, function (err, results) {
@@ -121,24 +125,24 @@ const addEmployee = ()=>{
         {
             type:"input",
             message:"What is this employee's role ID?",
-            name:"role",
+            name:"role"
         },
         // {
         //     type:"list",
         //     message:"What is this employee's role?",
         //     name:"role",
-        //     choices:[]
+        //     choices:rolesArr
         // },
         {
             type:"input",
             message:"What is this employee's manager's ID?",
-            name:"manager",
+            name:"manager"
         }
         // {
         //     type:"list",
         //     message:"Who is this employee's manager?",
         //     name:"manager",
-        //     choices:["None"]
+        //     choices:managersArr
         // }
     ]).then(ans=>{
         db.query(`INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES ("${ans.fName}", "${ans.lName}", ${ans.role}, ${ans.manager})`, function (err, results) {
@@ -151,13 +155,31 @@ const addEmployee = ()=>{
 const updateEmployee = ()=>{
     inquirer.prompt([
         {
-            type:"list",
-            message:"What role would like to asign to this employee?",
-            name:"role",
-            choices:[]
+            type:"input",
+            message:"Which employee (by ID) would you like to update?",
+            name:"employee"
+        },
+        // {
+        //     type:"list",
+        //     message:"Which employee would you like to update?",
+        //     name:"role",
+        //     choices:rolesArr
+        // },
+        {
+            type:"input",
+            message:"What role ID would you like to asign to this employee?",
+            name:"role"
         }
+        // {
+        //     type:"list",
+        //     message:"What role would like to asign to this employee?",
+        //     name:"role",
+        //     choices:managersArr
+        // }
     ]).then(ans=>{
-    
+        db.query(`UPDATE employees SET role_id = "${ans.role}" WHERE id = "${ans.employee}"`, function (err, results) {
+            console.log(results);
+          });
         defaultMenu()
     })
 }
